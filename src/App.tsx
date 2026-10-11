@@ -16,7 +16,7 @@ import About from './pages/About';
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/satlab">
       <StoreProvider>
         <Routes>
           <Route element={<Layout />}>
