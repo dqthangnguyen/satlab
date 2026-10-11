@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SATLab question review</title>
+<style>
+body{margin:0;font:16px/1.55 system-ui,sans-serif;background:#fffaf2;color:#1f2937}
+header{position:sticky;top:0;background:#fff;border-bottom:1px solid #e5e7eb;padding:10px 16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;z-index:2}
+main{display:grid;grid-template-columns:320px 1fr;gap:16px;padding:16px;max-width:1300px;margin:auto}
+@media(max-width:800px){main{grid-template-columns:1fr}}
+ul{list-style:none;margin:0;padding:0}li button{width:100%;text-align:left;border:1px solid #e5e7eb;background:#fff;border-radius:10px;padding:8px 10px;margin-bottom:6px;cursor:pointer;font:inherit}
+li button.sel{border-color:#1f5f99;background:#eef5fb}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:16px;margin-bottom:14px}
+.badge{display:inline-block;padding:1px 8px;border-radius:8px;font-size:13px;background:#f1f5f9;margin-right:4px}
+.pending{background:#fff3bf}.approved,.published{background:#d9f5e8}.rejected{background:#ffe3d6}
+button.act{font:inherit;font-weight:600;border:0;border-radius:10px;padding:9px 16px;cursor:pointer;background:#1f5f99;color:#fff}
+button.act.alt{background:#fff;color:#184b7a;border:2px solid #d8e8f6}button.act.bad{background:#c2410c}button:disabled{opacity:.5;cursor:not-allowed}
+select,input,textarea{font:inherit;padding:6px 8px;border:1px solid #cbd5e1;border-radius:8px;max-width:100%}textarea{width:100%;box-sizing:border-box}
+pre{white-space:pre-wrap;font:inherit;margin:4px 0}.ok{color:#0f766e}.warn{color:#b45309}.err{color:#c2410c}.small{font-size:14px;color:#64748b}
+.key{font-weight:700;color:#0f766e}th{text-align:left;padding-right:12px;vertical-align:top;color:#64748b;font-weight:500}
+</style></head>
+<body data-token="__TOKEN__">
+<header><strong>SATLab question review</strong>
+<label>Reviewer name <input id="reviewer" placeholder="Your name" size="18"></label>
+<label>Show <select id="filter"><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="published">Published</option><option value="all">All</option></select></label>
+<button class="act" id="publish">Publish approved</button><span id="msg" class="small"></span></header>
+<main><ul id="list"></ul><section id="detail"><p class="small">Pick a question. Nothing is published until you approve it and press Publish.</p></section></main>
+<script>
+const $ = (s) => document.querySelector(s), token = document.body.dataset.token;
+let state = null, selId = null;
+const el = (tag, props = {}, ...kids) => { const n = document.createElement(tag); for (const [k, v] of Object.entries(props)) { if (k === 'class') n.className = v; else if (k.startsWith('on')) n.addEventListener(k.slice(2), v); else n[k] = v; } for (const c of kids.flat()) n.append(c instanceof Node ? c : String(c ?? '')); return n; };
+async function api(path, body) {
+  const r = await fetch(path, { method: body ? 'POST' : 'GET', headers: { 'x-review-token': token, 'content-type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+  const j = await r.json(); if (!r.ok) throw new Error((j.errors || [j.error || r.statusText]).join('\n')); return j;
+}
+const reviewer = $('#reviewer'); reviewer.value = localStorage.getItem('satlab-reviewer') || ''; reviewer.addEventListener('input', () => localStorage.setItem('satlab-reviewer', reviewer.value));
+const status = (q) => q.reviewState?.status || 'pending';
+const HELP = { 'duplicate-choices': 'Two answer choices are identical.', 'missing-figure': 'The text refers to a figure, graph or table that is not included.', 'has-visual-unsupported': 'The source has a diagram SATLab cannot display.', 'missing-explanation': 'No explanation was provided.', 'explanation-key-mismatch': 'The explanation names a different answer than the key.', 'explanation-hedges': 'The explanation admits the answer is only the closest or may be wrong.', 'unmapped-skill': 'Choose a skill below.', 'unmapped-domain': 'Choose a domain below.', 'missing-difficulty': 'Choose a difficulty below.' };
+async function load() { state = await api('/api/state'); renderList(); if (selId) renderDetail(); }
+function renderList() {
+  const f = $('#filter').value, list = $('#list'); list.replaceChildren();
+  const qs = state.questions.filter((q) => f === 'all' || status(q) === f);
+  if (!qs.length) list.append(el('li', { class: 'small' }, 'No questions here. Run npm run import:opensat first.'));
+  for (const q of qs) list.append(el('li', {}, el('button', { class: q.id === selId ? 'sel' : '', onclick: () => { selId = q.id; renderList(); renderDetail(); } },
+    el('span', { class: 'badge ' + status(q) }, status(q)), el('span', { class: 'badge' }, q.section), ' ', q.provenance.sourceId, el('br'),
+    el('span', { class: 'small' }, q.prompt.slice(0, 70) + (q.prompt.length > 70 ? '…' : '')), el('br'), el('span', { class: 'small ' + (q.blockers.length ? 'warn' : 'ok') }, q.blockers.length ? q.blockers.length + ' open item(s)' : 'Ready'))));
+}
+function renderDetail() {
+  const q = state.questions.find((x) => x.id === selId), d = $('#detail'); d.replaceChildren(); if (!q) return;
+  const tax = state.taxonomy, locked = status(q) === 'published';
+  const domSel = el('select', {}, el('option', { value: 'unmapped' }, 'Unmapped'), tax.domains.filter((x) => x.section === q.section).map((x) => el('option', { value: x.id, selected: x.id === q.domain }, x.label)));
+  const sklSel = el('select', {}), diffSel = el('select', {}, ['unknown', 'easy', 'medium', 'hard'].map((x) => el('option', { value: x, selected: x === q.difficulty }, x)));
+  const fillSkills = () => { sklSel.replaceChildren(el('option', { value: 'unmapped' }, 'Unmapped'), ...tax.skills.filter((s) => s.domain === domSel.value).map((s) => el('option', { value: s.id, selected: s.id === q.skill }, s.label))); };
+  domSel.value = q.domain; fillSkills(); domSel.addEventListener('change', fillSkills);
+  d.append(el('div', { class: 'card' }, el('h2', {}, q.id), el('span', { class: 'badge ' + status(q) }, status(q)), el('span', { class: 'badge' }, q.section),
+    q.reviewState?.rejectReason ? el('p', { class: 'err' }, 'Rejected: ' + q.reviewState.rejectReason) : ''));
+  d.append(el('div', { class: 'card' }, el('h3', {}, 'Question (math shown as raw LaTeX)'), q.passage ? el('pre', {}, 'Passage:\n' + q.passage) : '', el('pre', {}, el('strong', {}, q.prompt)),
+    el('ol', { type: 'A', style: 'padding-left:24px' }, q.choices.map((c) => el('li', {}, el('span', { class: c.id === q.answer.choiceId ? 'key' : '' }, c.text, c.id === q.answer.choiceId ? '   ← source answer key' : '')))),
+    el('p', { class: 'small' }, 'The answer key comes from OpenSAT and is not changed here. If it is wrong, reject the question.'), el('h3', {}, 'Explanation'), el('pre', {}, q.explanation.short || '(none)')));
+  d.append(el('div', { class: 'card' }, el('h3', {}, 'Classification'), el('p', {}, 'Domain ', domSel, '  Skill ', sklSel, '  Difficulty ', diffSel), el('p', { class: 'small' }, 'Source said: domain "' + (q.provenance.sourceDomain ?? '-') + '", difficulty "' + (q.provenance.sourceDifficulty ?? '-') + '".')));
+  const notes = {}, fl = el('div', { class: 'card' }, el('h3', {}, 'Review flags'));
+  for (const f of q.flags) {
+    const row = el('div', { style: 'margin-bottom:10px' }, el('strong', {}, f.flag), ' ', el('span', { class: f.open ? 'warn' : 'ok' }, f.open ? (f.kind === 'hard' ? 'cannot be waived: reject the question' : 'open') : 'resolved'));
+    if (f.kind === 'ack') { const t = el('textarea', { rows: 2, value: f.note || '', placeholder: 'Write a note confirming: ' + state.ackFlags[f.flag], disabled: locked }); notes[f.flag] = t; row.append(el('div', {}, state.ackFlags[f.flag]), t); }
+    else row.append(el('div', { class: 'small' }, HELP[f.flag] || ''));
+    fl.append(row);
+  }
+  if (!q.flags.length) fl.append(el('p', { class: 'ok' }, 'No flags.')); d.append(fl);
+  const p = q.provenance;
+  d.append(el('div', { class: 'card' }, el('h3', {}, 'Provenance'), el('table', {}, [['Source', p.name], ['Source id', p.sourceId], ['Request', p.sourceUrl], ['Imported', p.importedAt], ['Raw file', p.rawFile], ['License', p.license], ['Note', p.licenseNote], ['Content hash', p.contentHash]].map(([k, v]) => el('tr', {}, el('th', {}, k), el('td', {}, v ?? '-'))))));
+  const out = el('p', { class: 'err' }, q.blockers.length ? 'Still open: ' + q.blockers.join('; ') : ''), reason = el('input', { placeholder: 'Reason for rejecting', size: 30 });
+  const send = async (type) => {
+    out.textContent = '';
+    const ack = Object.fromEntries(Object.entries(notes).map(([k, t]) => [k, t.value]));
+    try { await api('/api/review', { id: q.id, type, reviewer: reviewer.value, domain: domSel.value, skill: sklSel.value, difficulty: diffSel.value, acknowledged: ack, reason: reason.value }); await load(); $('#msg').textContent = type + ' saved'; }
+    catch (e) { out.textContent = e.message; }
+  };
+  d.append(el('div', { class: 'card' }, el('p', {}, el('button', { class: 'act alt', disabled: locked, onclick: () => send('save') }, 'Save'), ' ', el('button', { class: 'act', disabled: locked, onclick: () => send('approve') }, 'Approve'), ' ', reason, ' ', el('button', { class: 'act bad', disabled: locked, onclick: () => send('reject') }, 'Reject')), out,
+    el('p', { class: 'small' }, 'Approve needs your reviewer name, a mapped domain and skill, a difficulty, a written confirmation for each open flag, and no unwaivable flags.')));
+}
+$('#filter').addEventListener('change', renderList);
+$('#publish').addEventListener('click', async () => {
+  if (!confirm('Publish every approved question to the live question bank?')) return;
+  try { const s = await api('/api/publish', {}); $('#msg').textContent = 'Published ' + s.published + ', refused ' + s.refused.length + ', skipped ' + s.skipped; if (s.refused.length) alert(s.refused.map((r) => r.id + ': ' + r.blockers.join(', ')).join('\n')); await load(); }
+  catch (e) { alert(e.message); }
+});
+load().catch((e) => { $('#msg').textContent = e.message; });
+</script></body></html>

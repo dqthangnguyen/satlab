@@ -1,0 +1,278 @@
+[
+  {
+    "id": "RW0001",
+    "status": "published",
+    "version": 1,
+    "source": "original",
+    "section": "reading-writing",
+    "domain": "craft-and-structure",
+    "skill": "words-in-context",
+    "difficulty": "medium",
+    "format": "multiple_choice",
+    "passage": "The scientist’s findings were so ______ that other researchers repeated the experiment several times to confirm them.",
+    "prompt": "Which choice completes the text with the most logical and precise word?",
+    "choices": [
+      {
+        "id": "A",
+        "text": "surprising"
+      },
+      {
+        "id": "B",
+        "text": "ordinary",
+        "errorTag": "opposite-meaning"
+      },
+      {
+        "id": "C",
+        "text": "redundant",
+        "errorTag": "unsupported-by-context"
+      },
+      {
+        "id": "D",
+        "text": "irrelevant",
+        "errorTag": "unsupported-by-context"
+      }
+    ],
+    "answer": {
+      "kind": "choice",
+      "choiceId": "A"
+    },
+    "explanation": {
+      "short": "Researchers only repeat an experiment this many times when the result is unexpected. “Surprising” fits that logic."
+    },
+    "estimatedTimeSec": 60,
+    "tags": [
+      "vocabulary",
+      "sentence-completion"
+    ]
+  },
+  {
+    "id": "RW0002",
+    "status": "published",
+    "version": 1,
+    "source": "original",
+    "section": "reading-writing",
+    "domain": "standard-english-conventions",
+    "skill": "form-structure-sense",
+    "difficulty": "easy",
+    "format": "multiple_choice",
+    "passage": "The team of engineers ______ working on the bridge design since March.",
+    "prompt": "Which choice completes the text so that it conforms to Standard English?",
+    "choices": [
+      {
+        "id": "A",
+        "text": "have been",
+        "errorTag": "agreement-with-nearest-noun"
+      },
+      {
+        "id": "B",
+        "text": "has been"
+      },
+      {
+        "id": "C",
+        "text": "were",
+        "errorTag": "agreement-with-nearest-noun"
+      },
+      {
+        "id": "D",
+        "text": "are",
+        "errorTag": "tense-mismatch"
+      }
+    ],
+    "answer": {
+      "kind": "choice",
+      "choiceId": "B"
+    },
+    "explanation": {
+      "short": "The subject is “team,” which is singular. The present perfect “since March” requires “has been.”"
+    },
+    "estimatedTimeSec": 45,
+    "tags": [
+      "subject-verb-agreement",
+      "verb-tense"
+    ]
+  },
+  {
+    "id": "RW0003",
+    "status": "published",
+    "version": 1,
+    "source": "original",
+    "section": "reading-writing",
+    "domain": "information-and-ideas",
+    "skill": "inferences",
+    "difficulty": "medium",
+    "format": "multiple_choice",
+    "passage": "Researchers observed that honeybees returning to the hive perform a “waggle dance.” The angle of the dance indicates the direction of a food source relative to the sun, and its duration corresponds to the distance.",
+    "prompt": "Which inference is best supported by the passage?",
+    "choices": [
+      {
+        "id": "A",
+        "text": "Bees locate food using only smell.",
+        "errorTag": "unsupported-claim"
+      },
+      {
+        "id": "B",
+        "text": "The dance communicates both direction and distance."
+      },
+      {
+        "id": "C",
+        "text": "Longer dances mean the hive is larger.",
+        "errorTag": "misread-detail"
+      },
+      {
+        "id": "D",
+        "text": "The sun’s position is irrelevant to bees.",
+        "errorTag": "contradicts-passage"
+      }
+    ],
+    "answer": {
+      "kind": "choice",
+      "choiceId": "B"
+    },
+    "explanation": {
+      "short": "The passage ties angle to direction and duration to distance, so the dance carries both."
+    },
+    "estimatedTimeSec": 70,
+    "tags": [
+      "science-passage",
+      "inference"
+    ]
+  },
+  {
+    "id": "RW0004",
+    "status": "published",
+    "version": 1,
+    "source": "original",
+    "section": "reading-writing",
+    "domain": "expression-of-ideas",
+    "skill": "transitions",
+    "difficulty": "medium",
+    "format": "multiple_choice",
+    "passage": "Urban gardens can supply fresh vegetables to neighborhoods with few grocery stores. ______ They also give residents a shared project that builds relationships.",
+    "prompt": "Which choice best completes the text so it transitions from food supply to community benefits?",
+    "choices": [
+      {
+        "id": "A",
+        "text": "Gardens are made of plants.",
+        "errorTag": "irrelevant-to-argument"
+      },
+      {
+        "id": "B",
+        "text": "Many cities are large.",
+        "errorTag": "irrelevant-to-argument"
+      },
+      {
+        "id": "C",
+        "text": "Their value, however, is not limited to food."
+      },
+      {
+        "id": "D",
+        "text": "Soil comes in different types.",
+        "errorTag": "irrelevant-to-argument"
+      }
+    ],
+    "answer": {
+      "kind": "choice",
+      "choiceId": "C"
+    },
+    "explanation": {
+      "short": "Only the correct choice links the food benefit already mentioned to the community benefit that follows."
+    },
+    "estimatedTimeSec": 70,
+    "tags": [
+      "transition",
+      "paragraph-flow"
+    ]
+  },
+  {
+    "id": "RW0005",
+    "status": "published",
+    "version": 1,
+    "source": "original",
+    "section": "reading-writing",
+    "domain": "standard-english-conventions",
+    "skill": "boundaries",
+    "difficulty": "medium",
+    "format": "multiple_choice",
+    "passage": "The storm knocked out power across the city ______ crews worked through the night to restore it.",
+    "prompt": "Which punctuation correctly joins the two independent clauses?",
+    "choices": [
+      {
+        "id": "A",
+        "text": "; (semicolon)"
+      },
+      {
+        "id": "B",
+        "text": ", (comma)",
+        "errorTag": "comma-splice"
+      },
+      {
+        "id": "C",
+        "text": ": (colon)",
+        "errorTag": "wrong-punctuation-for-clause-link"
+      },
+      {
+        "id": "D",
+        "text": "No punctuation",
+        "errorTag": "run-on"
+      }
+    ],
+    "answer": {
+      "kind": "choice",
+      "choiceId": "A"
+    },
+    "explanation": {
+      "short": "Both sides are complete sentences. A semicolon can join them; a comma alone creates a comma splice."
+    },
+    "estimatedTimeSec": 60,
+    "tags": [
+      "punctuation",
+      "independent-clauses"
+    ]
+  },
+  {
+    "id": "RW0006",
+    "status": "published",
+    "version": 1,
+    "source": "original",
+    "section": "reading-writing",
+    "domain": "craft-and-structure",
+    "skill": "words-in-context",
+    "difficulty": "hard",
+    "format": "multiple_choice",
+    "passage": "Initially dismissed as a mere curiosity, the fossil eventually proved ______ to the field: it reshaped scientists’ understanding of how birds evolved.",
+    "prompt": "Which choice completes the text with the most logical and precise word?",
+    "choices": [
+      {
+        "id": "A",
+        "text": "pivotal"
+      },
+      {
+        "id": "B",
+        "text": "incidental",
+        "errorTag": "opposite-meaning"
+      },
+      {
+        "id": "C",
+        "text": "superficial",
+        "errorTag": "opposite-meaning"
+      },
+      {
+        "id": "D",
+        "text": "dubious",
+        "errorTag": "opposite-meaning"
+      }
+    ],
+    "answer": {
+      "kind": "choice",
+      "choiceId": "A"
+    },
+    "explanation": {
+      "short": "The sentence contrasts “mere curiosity” with an outcome that reshaped the field. “Pivotal” means critically important."
+    },
+    "estimatedTimeSec": 75,
+    "tags": [
+      "vocabulary",
+      "sentence-completion"
+    ]
+  }
+]

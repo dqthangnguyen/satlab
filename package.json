@@ -1,0 +1,33 @@
+{
+  "name": "satlab",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "import:opensat": "node scripts/opensat/import.mjs",
+    "promote:opensat": "node scripts/opensat/promote.mjs",
+    "test:data": "node --test scripts/opensat/opensat.test.mjs scripts/opensat/compat.test.mjs scripts/opensat/review.test.mjs scripts/opensat/ui-logic.test.mjs scripts/opensat/exam-logic.test.mjs",
+    "review:opensat": "node scripts/opensat/review-server.mjs",
+    "test:browser": "node scripts/browser/run.cjs && node scripts/browser/exam.cjs && node scripts/browser/pages.cjs"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2",
+    "katex": "^0.16.11"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.8",
+    "@types/katex": "^0.16.7"
+  }
+}

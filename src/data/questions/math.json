@@ -1,0 +1,261 @@
+[
+  {
+    "id": "M0001",
+    "status": "published",
+    "version": 1,
+    "source": "original",
+    "section": "math",
+    "domain": "algebra",
+    "skill": "linear-equations-one-variable",
+    "difficulty": "easy",
+    "format": "multiple_choice",
+    "prompt": "If 3x + 7 = 25, what is the value of x?",
+    "choices": [
+      {
+        "id": "A",
+        "text": "4"
+      },
+      {
+        "id": "B",
+        "text": "6"
+      },
+      {
+        "id": "C",
+        "text": "8"
+      },
+      {
+        "id": "D",
+        "text": "18",
+        "errorTag": "stopped-before-final-step"
+      }
+    ],
+    "answer": {
+      "kind": "choice",
+      "choiceId": "B"
+    },
+    "explanation": {
+      "short": "Subtract 7 from both sides to get 3x = 18, then divide by 3 to get x = 6."
+    },
+    "estimatedTimeSec": 45,
+    "tags": [
+      "equation",
+      "two-step"
+    ]
+  },
+  {
+    "id": "M0002",
+    "status": "published",
+    "version": 1,
+    "source": "original",
+    "section": "math",
+    "domain": "algebra",
+    "skill": "linear-functions",
+    "difficulty": "medium",
+    "format": "multiple_choice",
+    "prompt": "A gym charges a $40 sign-up fee plus $25 per month. Which equation gives the total cost C after m months?",
+    "choices": [
+      {
+        "id": "A",
+        "text": "C = 40m + 25",
+        "errorTag": "swapped-rate-and-fee"
+      },
+      {
+        "id": "B",
+        "text": "C = 25m + 40"
+      },
+      {
+        "id": "C",
+        "text": "C = 65m",
+        "errorTag": "added-rate-and-fee"
+      },
+      {
+        "id": "D",
+        "text": "C = 40 + 25 + m",
+        "errorTag": "no-rate-multiplier"
+      }
+    ],
+    "answer": {
+      "kind": "choice",
+      "choiceId": "B"
+    },
+    "explanation": {
+      "short": "The $25 charge repeats every month, so it multiplies m. The $40 fee is paid once, so it is added."
+    },
+    "estimatedTimeSec": 75,
+    "tags": [
+      "word-problem",
+      "modeling"
+    ]
+  },
+  {
+    "id": "M0003",
+    "status": "published",
+    "version": 1,
+    "source": "original",
+    "section": "math",
+    "domain": "advanced-math",
+    "skill": "nonlinear-equations",
+    "difficulty": "medium",
+    "format": "multiple_choice",
+    "prompt": "What are the solutions to x² − 5x + 6 = 0?",
+    "choices": [
+      {
+        "id": "A",
+        "text": "x = 1 and x = 6",
+        "errorTag": "product-only-check"
+      },
+      {
+        "id": "B",
+        "text": "x = 2 and x = 3"
+      },
+      {
+        "id": "C",
+        "text": "x = −2 and x = −3",
+        "errorTag": "sign-error-in-roots"
+      },
+      {
+        "id": "D",
+        "text": "x = −1 and x = 6"
+      }
+    ],
+    "answer": {
+      "kind": "choice",
+      "choiceId": "B"
+    },
+    "explanation": {
+      "short": "Factor as (x − 2)(x − 3) = 0. The solutions are x = 2 and x = 3."
+    },
+    "estimatedTimeSec": 75,
+    "tags": [
+      "quadratic",
+      "factoring"
+    ]
+  },
+  {
+    "id": "M0004",
+    "status": "published",
+    "version": 1,
+    "source": "original",
+    "section": "math",
+    "domain": "problem-solving-data-analysis",
+    "skill": "percentages",
+    "difficulty": "easy",
+    "format": "multiple_choice",
+    "prompt": "A shirt originally priced at $50 is on sale for 20% off. What is the sale price?",
+    "choices": [
+      {
+        "id": "A",
+        "text": "$30",
+        "errorTag": "treated-percent-as-dollars"
+      },
+      {
+        "id": "B",
+        "text": "$35"
+      },
+      {
+        "id": "C",
+        "text": "$40"
+      },
+      {
+        "id": "D",
+        "text": "$45"
+      }
+    ],
+    "answer": {
+      "kind": "choice",
+      "choiceId": "C"
+    },
+    "explanation": {
+      "short": "20% of $50 is $10, so the sale price is $50 − $10 = $40."
+    },
+    "estimatedTimeSec": 45,
+    "tags": [
+      "word-problem",
+      "discount"
+    ]
+  },
+  {
+    "id": "M0005",
+    "status": "published",
+    "version": 1,
+    "source": "original",
+    "section": "math",
+    "domain": "geometry-trigonometry",
+    "skill": "right-triangles-trigonometry",
+    "difficulty": "medium",
+    "format": "multiple_choice",
+    "prompt": "A right triangle has legs of length 6 and 8. What is the length of the hypotenuse?",
+    "choices": [
+      {
+        "id": "A",
+        "text": "9"
+      },
+      {
+        "id": "B",
+        "text": "10"
+      },
+      {
+        "id": "C",
+        "text": "12"
+      },
+      {
+        "id": "D",
+        "text": "14",
+        "errorTag": "added-legs-instead-of-pythagorean"
+      }
+    ],
+    "answer": {
+      "kind": "choice",
+      "choiceId": "B"
+    },
+    "explanation": {
+      "short": "By the Pythagorean theorem, 6² + 8² = 36 + 64 = 100, so the hypotenuse is 10."
+    },
+    "estimatedTimeSec": 60,
+    "tags": [
+      "pythagorean-theorem"
+    ]
+  },
+  {
+    "id": "M0006",
+    "status": "published",
+    "version": 1,
+    "source": "original",
+    "section": "math",
+    "domain": "advanced-math",
+    "skill": "nonlinear-functions",
+    "difficulty": "hard",
+    "format": "multiple_choice",
+    "prompt": "If f(x) = 2x² − 3x + 1, what is f(3)?",
+    "choices": [
+      {
+        "id": "A",
+        "text": "10"
+      },
+      {
+        "id": "B",
+        "text": "12"
+      },
+      {
+        "id": "C",
+        "text": "14"
+      },
+      {
+        "id": "D",
+        "text": "16"
+      }
+    ],
+    "answer": {
+      "kind": "choice",
+      "choiceId": "A"
+    },
+    "explanation": {
+      "short": "Substitute 3 for x: 2(9) − 3(3) + 1 = 18 − 9 + 1 = 10."
+    },
+    "estimatedTimeSec": 90,
+    "tags": [
+      "function-evaluation",
+      "quadratic"
+    ]
+  }
+]
