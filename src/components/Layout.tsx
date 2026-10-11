@@ -32,8 +32,8 @@ export default function Layout() {
       <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6"><ErrorBoundary key={pathname}><Outlet /></ErrorBoundary></main>
       <footer className="border-t border-slate-200 bg-white/70">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-5 text-sm text-slate-600 sm:px-6">
-          <p><span className="font-semibold text-slate-800">SATLab</span> · Founded by Nguyen Dinh Quyet Thang (Ray) · Vietnam</p>
-          <p className="flex gap-4"><Link to="/about" className="underline">About</Link><a href="mailto:nguyendinhquyetthang100@gmail.com" className="underline">Contact</a></p>
+          <p><span className="font-semibold text-slate-800">SATLab</span> · Founded by Dinh Quyet Thang Nguyen (Ray) · Vietnam</p>
+          <p className="flex gap-4"><Link to="/about" className="underline">About</Link></p>        
         </div>
       </footer>
     </div>
