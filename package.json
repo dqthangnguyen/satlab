@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "import:opensat": "node scripts/opensat/import.mjs",
     "promote:opensat": "node scripts/opensat/promote.mjs",
-    "test:data": "node --test scripts/opensat/opensat.test.mjs scripts/opensat/compat.test.mjs scripts/opensat/review.test.mjs scripts/opensat/ui-logic.test.mjs scripts/opensat/exam-logic.test.mjs",
+    "test:data": "node --test scripts/opensat/opensat.test.mjs scripts/opensat/compat.test.mjs scripts/opensat/review.test.mjs scripts/opensat/ui-logic.test.mjs scripts/opensat/exam-logic.test.mjs scripts/opensat/question-validation.test.mjs",
     "review:opensat": "node scripts/opensat/review-server.mjs",
     "test:browser": "node scripts/browser/run.cjs && node scripts/browser/exam.cjs && node scripts/browser/pages.cjs"
   },
