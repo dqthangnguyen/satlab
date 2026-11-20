@@ -11,7 +11,6 @@ import { confidenceOptions, errorOptions } from '../lib/labels';
 import { canNext, canPrev, clampIndex, countUnanswered, firstUnanswered, navItems } from '../lib/examNav';
 import { loadSessionUi, saveSessionUi } from '../lib/sessionUi';
 import type { SessionUi, StorageLike } from '../lib/sessionUi';
-import { useQuestionTimer } from '../lib/useQuestionTimer';
 import { sectionLabel } from '../data/taxonomy';
 import type { Attempt, Question } from '../types';
 
@@ -25,7 +24,7 @@ interface Props {
 
 /**
  * Practice in the exam layout. Answers are recorded in the main store when checked (as before), so they survive any navigation.
- * Selected-but-unchecked answers, flags and position are kept per session, and are recorded when the session is finished.
+ * Selected-but-unchecked answers, flags and position are kept per session; only checked answers are submitted.
  */
 export default function PracticeWorkspace({ questions, source, sessionId, title, onExit, onFinish, finishLabel = 'Finish', info }: Props) {
   const { attempts, addAttempts, updateAttempt } = useStore();
@@ -45,8 +44,6 @@ export default function PracticeWorkspace({ questions, source, sessionId, title,
   const attempt = attemptOf(q.id);
   const answered = !!attempt;
   const sel = answered ? attempt.response : ui.drafts[q.id] ?? null;
-  const timer = useQuestionTimer(q.id, !answered);
-
   const setDraft = (v: string) => setUi((u) => ({ ...u, drafts: { ...u.drafts, [q.id]: v } }));
   const go = (n: number) => setUi((u) => ({ ...u, cursor: clampIndex(n, ids.length) }));
   const hasDraft = (qid: string) => !!ui.drafts[qid]?.trim();
@@ -55,20 +52,19 @@ export default function PracticeWorkspace({ questions, source, sessionId, title,
     const question = questions.find((x) => x.id === qid);
     const resp = ui.drafts[qid]?.trim();
     if (!question || !resp || attemptOf(qid)) return;
-    // Whole seconds, minimum 1 (the clock resolution). Time keeps adding up across visits to this question.
-    const a = createAttempt(question, resp, source, { timeSpentSec: Math.max(1, Math.round(timer.elapsedMs(qid) / 1000)), sessionId });
+    const a = createAttempt(question, resp, source, { sessionId });
     addAttempts([a]);
     if (!sessionId) setLocal((l) => ({ ...l, [qid]: a.id }));
   };
-  const finish = () => { questions.forEach((x) => check(x.id)); setConfirm(null); onFinish(); };
+  const finish = () => { setConfirm(null); onFinish(); };
 
-  const unanswered = countUnanswered(navItems(ids, (id) => !!attemptOf(id) || hasDraft(id), ui.flags));
+  const unanswered = countUnanswered(navItems(ids, (id) => !!attemptOf(id), ui.flags));
   const pending = questions.filter((x) => !attemptOf(x.id) && hasDraft(x.id)).length;
 
   const right = (
     <div className="mx-auto max-w-xl">
       <AnswerChoices q={q} selected={sel} onSelect={setDraft} revealed={answered} />
-      {!answered && <button className="btn-primary mt-6" disabled={!hasDraft(q.id)} onClick={() => check()}>Check</button>}
+      {!answered && <button className="btn-primary mt-6" disabled={!hasDraft(q.id)} onClick={() => check()}>Submit answer</button>}
       {attempt && (
         <div className="mt-6 space-y-5">
           <Verdict q={q} selected={attempt.response} />
@@ -93,13 +89,13 @@ export default function PracticeWorkspace({ questions, source, sessionId, title,
       title={`${sectionLabel(q.section)} · ${title}`} index={i} total={ids.length} scrollKey={q.id}
       flagged={!!ui.flags[q.id]} onFlag={() => setUi((u) => ({ ...u, flags: { ...u.flags, [q.id]: !u.flags[q.id] } }))}
       onPrev={() => go(i - 1)} onNext={() => go(i + 1)} canPrev={canPrev(i)} canNext={canNext(i, ids.length)}
-      items={navItems(ids, (id) => !!attemptOf(id) || hasDraft(id), ui.flags)} onJump={go}
+      items={navItems(ids, (id) => !!attemptOf(id), ui.flags)} onJump={go}
       onFinish={() => setConfirm('finish')} finishLabel={finishLabel} onExit={onExit} info={info}
       left={<QuestionContent q={q} />} right={right}
       dialogs={confirm === 'finish' && (
         <ConfirmDialog title={`${finishLabel}?`} confirmLabel={finishLabel} cancelLabel="Keep going" onConfirm={finish} onCancel={() => setConfirm(null)}>
           {unanswered > 0 ? <p>{unanswered} question{unanswered === 1 ? ' has' : 's have'} no answer and will not be counted.</p> : <p>You answered every question.</p>}
-          {pending > 0 && <p>{pending} selected answer{pending === 1 ? '' : 's'} you did not check will be recorded.</p>}
+          {pending > 0 && <p>{pending} selected answer{pending === 1 ? '' : 's'} not submitted will not be counted.</p>}
         </ConfirmDialog>
       )}
     />

@@ -65,7 +65,7 @@ export interface Attempt {
   questionVersion: number;
   response: string | null; // choice id ("B") or typed answer; null = unanswered
   isCorrect: boolean;
-  timeSpentSec?: number; // active seconds; recorded by Practice, absent for tests
+  timeSpentSec?: number; // historical elapsed-time data for older attempts
   at: number;
   source: 'practice' | 'test' | 'review' | 'personalized';
   testResultId?: string;

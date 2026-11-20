@@ -13,6 +13,12 @@ import Dashboard from './pages/Dashboard';
 import Mistakes from './pages/Mistakes';
 import Coach from './pages/Coach';
 import About from './pages/About';
+import AdminRoute from './pages/admin/AdminRoute';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminQuestionDetail from './pages/admin/AdminQuestionDetail';
+import CreateQuestion from './pages/admin/CreateQuestion';
+import QuestionBank from './pages/admin/QuestionBank';
 
 export default function App() {
   return (
@@ -29,6 +35,13 @@ export default function App() {
             <Route path="results/:id" element={<Result />} />
             <Route path="mistakes" element={<Mistakes />} />
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="admin/login" element={<AdminLogin />} />
+            <Route path="admin" element={<AdminRoute />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="questions" element={<QuestionBank />} />
+              <Route path="questions/new" element={<CreateQuestion />} />
+              <Route path="questions/:questionId" element={<AdminQuestionDetail />} />
+            </Route>
             <Route path="coach" element={<Coach />} />
             <Route path="about" element={<About />} />
             <Route path="*" element={<Empty title="Page not found" text="This page does not exist." to="/" cta="Go home" />} />

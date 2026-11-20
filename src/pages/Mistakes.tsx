@@ -38,7 +38,7 @@ export default function Mistakes() {
                   <p className="text-lg font-medium"><RichText text={q.prompt} /></p>
                   <p className="mt-2 text-sm text-slate-600">Your answer: <RichText text={responseLabel(q, a.response)} />. Correct answer: <RichText text={correctLabel(q)} />.</p>
                   <p className="mt-1 text-sm text-slate-600">
-                    Error type: {a.errorType ? errorTypeLabel(a.errorType) : 'Not recorded'} · Time: {a.timeSpentSec !== undefined ? `${a.timeSpentSec}s` : 'Not recorded'} · Confidence: {a.confidence ? confidenceLabel(a.confidence) : 'Not recorded'}
+                    Error type: {a.errorType ? errorTypeLabel(a.errorType) : 'Not recorded'} · Confidence: {a.confidence ? confidenceLabel(a.confidence) : 'Not recorded'}
                   </p>
                   <details className="mt-2"><summary className="cursor-pointer text-sm font-medium text-brand-700">Show explanation</summary><p className="mt-2 text-sm leading-6 text-slate-700"><RichText text={q.explanation.short} /></p></details>
                   <label className="mt-4 block text-xs font-medium text-slate-600">Your note
