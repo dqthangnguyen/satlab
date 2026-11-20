@@ -38,7 +38,7 @@ export default function Layout() {
       onClick={() => void handleSignOut()}
       disabled={signingOut}
     >
-      {signingOut ? 'Đang đăng xuất…' : 'Log out'}
+      {signingOut ? 'Signing out…' : 'Sign out'}
     </button>
   );
 
@@ -58,7 +58,7 @@ export default function Layout() {
             {showAdminControls && logoutButton('btn-secondary hidden md:inline-flex')}
             {signingOut && !showAdminControls && (
               <span className="hidden text-sm text-slate-600 md:inline" role="status" aria-live="polite">
-                Đang đăng xuất…
+                Signing out…
               </span>
             )}
             <button className="btn-secondary md:hidden" aria-expanded={open} onClick={() => setOpen(!open)}>Menu</button>
@@ -70,7 +70,7 @@ export default function Layout() {
             {showAdminControls && logoutButton('btn-secondary mt-2 w-full')}
             {signingOut && !showAdminControls && (
               <p className="px-3 py-2 text-sm text-slate-600" role="status" aria-live="polite">
-                Đang đăng xuất…
+                Signing out…
               </p>
             )}
           </nav>
