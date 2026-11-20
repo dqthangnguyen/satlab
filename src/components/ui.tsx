@@ -12,10 +12,10 @@ export const Badge = ({ children, tone = 'slate' }: { children: ReactNode; tone?
 export const difficultyTone = (d: Difficulty) => (d === 'hard' ? 'red' : d === 'medium' ? 'amber' : d === 'easy' ? 'green' : 'slate') as keyof typeof tones;
 
 export const PageHeader = ({ title, subtitle, children }: { title: string; subtitle?: string; children?: ReactNode }) => (
-  <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+  <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
     <div>
       <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h1>
-      {subtitle && <p className="mt-2 max-w-xl text-lg text-slate-600">{subtitle}</p>}
+      {subtitle && <p className="mt-2 max-w-xl text-base text-slate-600">{subtitle}</p>}
     </div>
     {children}
   </div>

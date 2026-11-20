@@ -1,0 +1,14 @@
+project_id = "satlab"
+
+[api]
+enabled = true
+schemas = ["public", "graphql_public"]
+
+[db.seed]
+enabled = true
+sql_paths = ["./seed.sql"]
+
+[auth]
+enabled = true
+enable_signup = true
+enable_anonymous_sign_ins = true

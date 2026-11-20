@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../lib/store';
 import { byDifficulty, byDomain, bySkill, errorCounts, pct, scoreResult } from '../lib/stats';
-import { fmtDuration, mean, timeStats, uniqueQuestions } from '../lib/metrics';
+import { mean, uniqueQuestions } from '../lib/metrics';
 import { RULES, buildProfile } from '../lib/learnerProfile';
 import { domainLabel } from '../data/taxonomy';
 import { BarList } from '../components/Breakdowns';
@@ -16,8 +16,6 @@ export default function Dashboard() {
   const correct = attempts.filter((a) => a.isCorrect).length;
   const scores = results.map(scoreResult).filter((s) => s.total > 0); // a result without questions has no score
   const avgTest = mean(scores.map((s) => s.pct));
-  const time = timeStats(attempts);
-  const ratio = profile.pacing.paceRatio;
   const errs = errorCounts(attempts);
   const errTotal = errs.reduce((s, e) => s + e.count, 0);
   const top = profile.weakSkills.slice(0, 3);
@@ -34,9 +32,7 @@ export default function Dashboard() {
         <Stat label="Tests taken" value={results.length} hint={scores.length ? `Latest: ${scores[scores.length - 1].pct}% correct` : 'None scored yet'} />
         <Stat label="Average test score" value={avgTest === null ? 'None' : `${avgTest}%`} hint="Average of each test's % correct" />
       </div>
-      <div className="mb-8 grid gap-4 sm:grid-cols-2">
-        <Stat compact label="Average time per question" value={time.avgSec === null ? 'Not available' : fmtDuration(time.avgSec)}
-          hint={time.count ? `Practice answers only (${time.count} timed${time.ignored ? `, ${time.ignored} invalid ignored` : ''})${ratio !== null ? `. About ${ratio.toFixed(1)}x the expected time${profile.pacing.pace === 'fast' ? ', faster than expected' : ''}.` : ''}` : 'Recorded in practice sessions, not in tests'} />
+      <div className="mb-8">
         <Stat compact label="Most common error type" value={errs[0] ? errs[0].label : 'Not recorded'}
           hint={errs[0] ? (errTotal < 5 ? `Based on only ${errTotal} recorded mistake${errTotal === 1 ? '' : 's'}. A hint, not a pattern.` : `${errs[0].count} of ${errTotal} mistakes with a reason`) : 'Pick a reason after a wrong answer in practice'} />
       </div>

@@ -1,4 +1,5 @@
 export type SectionId = 'math' | 'reading-writing';
+export const UNMAPPED = 'unmapped';
 export type Difficulty = 'easy' | 'medium' | 'hard' | 'unknown'; // 'unknown' is only allowed on unpublished questions
 export type ErrorType = 'concept-gap' | 'careless' | 'misread' | 'vocabulary' | 'time-pressure' | 'guess' | 'trap-choice';
 export type ChoiceId = 'A' | 'B' | 'C' | 'D';
@@ -26,7 +27,7 @@ export interface Question {
   format: 'multiple_choice' | 'student_produced';
   passage?: string;
   prompt: string;
-  figure?: { src: string; alt: string };
+  figure?: QuestionFigure;
   choices?: Choice[]; // present when format is multiple_choice
   answer: Answer;
   explanation: { short: string; steps?: string[] };
@@ -39,9 +40,24 @@ export interface Question {
 }
 
 export interface Provenance {
-  name: string; sourceId: string; sourceDomain?: string; sourceDifficulty?: string; sourceUrl: string;
-  importedAt: string; license: string; licenseNote: string; rawFile?: string; contentHash: string;
+  name: string;
+  sourceId: string;
+  sourceDomain?: string;
+  sourceDifficulty?: string;
+  sourceUrl?: string;
+  importedAt?: string;
+  license?: string;
+  licenseNote?: string;
+  rawFile?: string;
+  contentHash: string;
+  generatedAt?: string;
+  generator?: string;
+  model?: string;
+  promptVersion?: string;
+  referenceIds?: string[];
 }
+
+export interface QuestionFigure { src: string; alt: string }
 
 export interface Attempt {
   id: string;
@@ -49,7 +65,7 @@ export interface Attempt {
   questionVersion: number;
   response: string | null; // choice id ("B") or typed answer; null = unanswered
   isCorrect: boolean;
-  timeSpentSec?: number; // active seconds; recorded by Practice, absent for tests
+  timeSpentSec?: number; // historical elapsed-time data for older attempts
   at: number;
   source: 'practice' | 'test' | 'review' | 'personalized';
   testResultId?: string;

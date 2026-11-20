@@ -2,7 +2,7 @@ import { getAllQuestions, getQuestion } from './questionBank';
 import { byDifficulty, byDomain, errorCounts, groupBy, pct } from './stats';
 import type { Breakdown, ErrorCount } from './stats';
 import { confidenceLabel } from './labels';
-import { attemptTime, validDuration } from './metrics';
+import { attemptTime } from './metrics';
 import { sectionLabel, skillLabel } from '../data/taxonomy';
 import type { Attempt, SectionId } from '../types';
 
@@ -17,9 +17,6 @@ export const RULES = {
   recentWindow: 7, // "your last N attempts" statements
   trendWindow: 3, // trend compares the last 3 attempts with everything before; needs at least 3 + 3 attempts
   trendDelta: 20, // accuracy points of difference that count as improving or declining
-  minTimed: 3, // timed attempts needed before judging pace
-  slowAbove: 1.5, // time spent / estimated time at or above this is "slow"
-  fastBelow: 0.6, // at or below this is "fast"
   minConfidence: 3, // confidence-tagged attempts needed before commenting on confidence
   oftenShare: 0.5, // share of Guess/Unsure answers that counts as "often"
   minRepeatedError: 2, // the same error type must be recorded this many times to be called a pattern
@@ -27,11 +24,9 @@ export const RULES = {
 };
 
 export type SkillStatus = 'insufficient' | 'weak' | 'developing' | 'strong';
-export type Pace = 'slow' | 'on-pace' | 'fast' | null;
 export interface SkillProfile {
   skill: string; label: string; domain: string; section: SectionId;
   attempts: number; correct: number; accuracy: number;
-  timedAttempts: number; avgTimeSec: number | null; paceRatio: number | null; pace: Pace;
   topError: ErrorCount | null;
   confidence: { guess: number; unsure: number; sure: number; tagged: number };
   recentCount: number; recentWrong: number;
@@ -47,21 +42,6 @@ export interface LearnerProfile {
   insufficient: SkillProfile[]; // fewer than minAttempts, including skills never practiced
   bySection: Breakdown[]; byDomain: Breakdown[]; byDifficulty: Breakdown[]; byConfidence: Breakdown[];
   errors: ErrorCount[]; errorPatterns: ErrorPattern[];
-  pacing: { timedAttempts: number; avgTimeSec: number | null; paceRatio: number | null; pace: Pace };
-}
-
-/** Time spent compared with each question's estimatedTimeSec. Attempts without a recorded time (tests, older data) are ignored. */
-function pacing(list: Attempt[]) {
-  const timed = list.filter((a) => validDuration(a.timeSpentSec));
-  const total = timed.reduce((s, a) => s + (a.timeSpentSec ?? 0), 0);
-  let sec = 0, est = 0, n = 0;
-  for (const a of timed) {
-    const e = getQuestion(a.questionId)?.estimatedTimeSec;
-    if (e && e > 0) { sec += a.timeSpentSec ?? 0; est += e; n++; }
-  }
-  const paceRatio = n >= RULES.minTimed ? sec / est : null;
-  const pace: Pace = paceRatio === null ? null : paceRatio >= RULES.slowAbove ? 'slow' : paceRatio <= RULES.fastBelow ? 'fast' : 'on-pace';
-  return { timedAttempts: timed.length, avgTimeSec: timed.length ? Math.round(total / timed.length) : null, paceRatio, pace };
 }
 
 function profileSkill(skill: string, raw: Attempt[]): SkillProfile {
@@ -83,7 +63,7 @@ function profileSkill(skill: string, raw: Attempt[]): SkillProfile {
   const status: SkillStatus = n < RULES.minAttempts ? 'insufficient' : accuracy < RULES.weakBelow ? 'weak' : accuracy < RULES.strongFrom ? 'developing' : 'strong';
   return {
     skill, label: skillLabel(skill), domain: list[0]?.domain ?? bank?.domain ?? '', section: (list[0]?.section ?? bank?.section) as SectionId,
-    attempts: n, correct, accuracy, ...pacing(list), topError: errorCounts(list)[0] ?? null, confidence,
+    attempts: n, correct, accuracy, topError: errorCounts(list)[0] ?? null, confidence,
     recentCount: recent.length, recentWrong: recent.filter((a) => !a.isCorrect).length, trend,
     lastAt: n ? attemptTime(list[n - 1]) : 0, status,
   };
@@ -111,7 +91,6 @@ export function buildProfile(attempts: Attempt[]): LearnerProfile {
       const top = [...per].sort((x, y) => y[1] - x[1])[0];
       return { ...e, topSkill: top ? skillLabel(top[0]) : null };
     }),
-    pacing: pacing(valid),
   };
 }
 
@@ -127,7 +106,6 @@ export function explainSkill(p: SkillProfile, now = Date.now()): string[] {
   if (p.topError && p.topError.count >= RULES.minRepeatedError) out.push(`Your most common reason for missing this skill: "${p.topError.label}" (${p.topError.count} times).`);
   const low = p.confidence.guess + p.confidence.unsure;
   if (p.confidence.tagged >= RULES.minConfidence && low / p.confidence.tagged >= RULES.oftenShare) out.push(`You marked Guess or Unsure on ${low} of ${p.confidence.tagged} answers in this skill.`);
-  if (p.pace === 'slow' && p.paceRatio !== null) out.push(`You took about ${p.paceRatio.toFixed(1)}x the expected time per question in this skill.`);
   const days = Math.floor((now - p.lastAt) / 86400000);
   if (p.lastAt && days > RULES.staleDays) out.push(`You have not practiced this skill in ${days} days.`);
   return out;

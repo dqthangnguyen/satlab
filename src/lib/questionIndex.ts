@@ -1,7 +1,8 @@
+import { UNMAPPED } from '../types.ts';
 import type { Difficulty, Question, SectionId } from '../types';
 
 // Pure logic, no Vite-only APIs, so it can be tested directly in Node.
-export const UNMAPPED = 'unmapped';
+export { UNMAPPED };
 
 export interface QuestionFilter {
   section?: SectionId; domain?: string; skill?: string; difficulty?: Difficulty; tag?: string;

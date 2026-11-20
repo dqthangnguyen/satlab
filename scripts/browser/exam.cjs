@@ -31,6 +31,7 @@ fs.writeFileSync(path.join(dir, 'index.html'), `<!doctype html><meta charset=utf
   }, [a, ao, b, bo, field]);
   const shot = async (n) => { if (process.env.SHOTS) { fs.mkdirSync(process.env.SHOTS, { recursive: true }); await page.screenshot({ path: path.join(process.env.SHOTS, n + '.png') }); } };
   await page.goto(url); await page.waitForSelector(L);
+  assert.strictEqual(await page.$('[role=timer]'), null); ok('Practice has no timer in its workspace');
 
   // 1. two panels side by side, whole page does not scroll
   const l = await box(L), r = await box(R);
@@ -57,14 +58,14 @@ fs.writeFileSync(path.join(dir, 'index.html'), `<!doctype html><meta charset=utf
   await page.click('header button:has-text("Flag")'); assert.strictEqual(await page.getAttribute('header button[aria-pressed]', 'aria-pressed'), 'true');
   await page.click('footer button:has-text("Question 1 of 3")');
   const labels = await page.$$eval('[role=dialog] button[aria-label^="Question"]', (b) => b.map((x) => x.getAttribute('aria-label')));
-  assert.deepStrictEqual(labels, ['Question 1, answered, flagged', 'Question 2, not answered', 'Question 3, not answered']); ok('navigator shows answered, unanswered and flagged questions');
+  assert.deepStrictEqual(labels, ['Question 1, not answered, flagged', 'Question 2, not answered', 'Question 3, not answered']); ok('a selected but unsubmitted answer remains unanswered in the navigator');
   await page.keyboard.press('Escape'); assert.strictEqual(await page.$('[role=dialog]'), null); ok('Escape closes the navigator');
   await page.click('footer button:has-text("Question 1 of 3")'); await page.click('[role=dialog] button[aria-label^="Question 2"]'); assert.match(await pos(), /Question 2 of 3/); ok('navigator jumps to a question');
 
   // 5. math question without passage: formulas, figure inside the panel, check + confidence persist
   assert.ok(await page.$(`${L} .katex`)); const fig = await page.$(`${L} img[alt="A number line from 0 to 10"]`); assert.ok(fig);
   const fb = await fig.boundingBox(), lb = await box(L); assert.ok(fb.x >= lb.x && fb.x + fb.width <= lb.x + lb.w + 1); ok('equation renders, figure keeps its alt text and stays inside the panel');
-  await page.click('[role=radio]:has-text("x = 6")'); await page.click(`${R} button:has-text("Check")`);
+  await page.click('[role=radio]:has-text("x = 6")'); await page.click(`${R} button:has-text("Submit answer")`);
   assert.ok((await page.textContent(R)).includes('Correct')); await page.click('button:text-is("Sure")'); await shot('exam-math-checked'); ok('Check shows the result and explanation');
   await prev(); await next(); assert.ok((await page.textContent(R)).includes('Correct')); assert.strictEqual(await page.getAttribute('button:text-is("Sure")', 'aria-pressed'), 'true'); ok('a checked answer and its confidence are restored after navigating away');
 
@@ -98,19 +99,19 @@ fs.writeFileSync(path.join(dir, 'index.html'), `<!doctype html><meta charset=utf
   assert.ok(await page.isVisible(L) && await page.isVisible(R)); assert.strictEqual(await checked('Choice A'), 'true'); ok('switching between mobile and desktop mid-session keeps the answer');
 
   // 10. wrong answer: error reason can be recorded
-  await page.click(`${R} button:has-text("Check")`); assert.ok((await page.textContent(R)).includes('Not quite'));
+  await page.click(`${R} button:has-text("Submit answer")`); assert.ok((await page.textContent(R)).includes('Not quite'));
   await page.click('button:has-text("I guessed")'); assert.strictEqual(await page.getAttribute('button:has-text("I guessed")', 'aria-pressed'), 'true'); assert.strictEqual(await page.$('button:has-text("Skip")'), null); ok('wrong answer asks why; the reason is saved');
 
-  // 11. finish: confirmation, cancel keeps going, confirm records pending answers
+  // 11. finish: confirmation and cancellation; an unsubmitted draft is not recorded on finish
   await next(); await next(); assert.strictEqual(await page.isVisible('footer button:has-text("Finish session")'), true);
   await page.click('footer button:has-text("Finish session")'); const msg = await page.textContent('[role=dialog]');
-  assert.ok(msg.includes('You answered every question') && msg.includes('1 selected answer')); await page.click('[role=dialog] button:has-text("Keep going")');
+  assert.ok(msg.includes('1 question has no answer') && msg.includes('1 selected answer') && msg.includes('will not be counted')); await page.click('[role=dialog] button:has-text("Keep going")');
   assert.strictEqual(await page.$('[role=dialog]'), null); assert.strictEqual(await page.$('#done'), null); ok('finish asks for confirmation and can be cancelled');
   await page.click('footer button:has-text("Finish session")'); await page.click('[role=dialog] button:has-text("Finish session")'); await page.waitForSelector('#done');
   const att = await page.evaluate(() => JSON.parse(localStorage.getItem('satlab:v2')).attempts);
-  assert.deepStrictEqual(att.map((a) => [a.questionId, a.response, a.isCorrect]).sort(), [['E1', 'A', false], ['E2', 'B', true], ['E3', '7', true]]);
-  assert.ok(att.every((a) => a.sessionId === 'S1' && Number.isInteger(a.timeSpentSec) && a.timeSpentSec >= 1)); assert.strictEqual(att.find((a) => a.questionId === 'E1').errorType, 'guess'); assert.strictEqual(att.find((a) => a.questionId === 'E2').confidence, 'sure');
-  assert.ok(!(await page.$eval('#root', (e) => e.hasAttribute('inert')))); ok('finishing records the unchecked answer, with time, confidence and error reason; the site becomes usable again');
+  assert.deepStrictEqual(att.map((a) => [a.questionId, a.response, a.isCorrect]).sort(), [['E1', 'A', false], ['E2', 'B', true]]);
+  assert.ok(att.every((a) => a.sessionId === 'S1' && a.timeSpentSec === undefined)); assert.strictEqual(att.find((a) => a.questionId === 'E1').errorType, 'guess'); assert.strictEqual(att.find((a) => a.questionId === 'E2').confidence, 'sure');
+  assert.ok(!(await page.$eval('#root', (e) => e.hasAttribute('inert')))); ok('finish records only submitted answers, without Practice time tracking; the site becomes usable again');
   assert.deepStrictEqual(errors, [], errors.join(' | ')); ok('no console or page errors');
   await browser.close();
 })().catch((e) => { console.error('FAIL:', e.message); process.exit(1); });

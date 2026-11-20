@@ -6,7 +6,7 @@ import type { NavItem } from '../lib/examNav';
 
 export interface ExamShellProps {
   title: string; index: number; total: number; scrollKey: string;
-  timer?: ReactNode; flagged: boolean; onFlag: () => void;
+  testTimer?: ReactNode; notification?: ReactNode; flagged: boolean; onFlag: () => void;
   onPrev: () => void; onNext: () => void; canPrev: boolean; canNext: boolean;
   items: NavItem[]; onJump: (i: number) => void;
   onFinish: () => void; finishLabel?: string; onExit: () => void;
@@ -47,11 +47,17 @@ export default function ExamShell(p: ExamShellProps) {
       <header className="flex items-center gap-3 border-b-2 border-slate-200 px-3 py-2 sm:px-5">
         <span className="hidden font-serif text-xl font-semibold text-brand-700 sm:block">SATLab</span>
         <p className="flex min-w-0 flex-1 items-baseline gap-1 text-base font-semibold" aria-live="polite"><span className="truncate">{p.title}</span><span className="shrink-0 text-slate-500"><span className="sm:hidden"> · {p.index + 1}/{p.total}</span><span className="hidden sm:inline"> · Question {p.index + 1} of {p.total}</span></span></p>
-        {p.timer}
+        {p.testTimer}
         {p.info && <button className={tool} onClick={() => setInfoOpen(true)}>{p.info.label}</button>}
         <button className={`${tool} ${p.flagged ? 'border-sun-300 bg-sun-100' : ''}`} aria-pressed={p.flagged} onClick={p.onFlag}>{p.flagged ? 'Flagged' : 'Flag'}</button>
         <button className={tool} onClick={p.onExit}>Exit</button>
       </header>
+
+      {p.notification && (
+        <div className="border-b border-sun-300 bg-sun-100 px-4 py-2 text-sm text-amber-900">
+          {p.notification}
+        </div>
+      )}
 
       <div className="flex border-b border-slate-200 min-[900px]:hidden" role="group" aria-label="Show">
         {([['q', 'Question'], ['a', 'Answers']] as const).map(([k, label]) => (
@@ -60,8 +66,8 @@ export default function ExamShell(p: ExamShellProps) {
       </div>
 
       <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(0,1fr)] min-[900px]:grid-cols-2 min-[900px]:divide-x-2 min-[900px]:divide-slate-200">
-        <section ref={left} tabIndex={0} onScroll={(e) => remember(0, e.currentTarget.scrollTop)} aria-label="Question" className={`${tab === 'q' ? 'block' : 'hidden'} min-h-0 overflow-y-auto overscroll-contain px-5 py-6 min-[900px]:block min-[900px]:px-8`}>{p.left}</section>
-        <section ref={right} tabIndex={0} onScroll={(e) => remember(1, e.currentTarget.scrollTop)} aria-label="Answers" className={`${tab === 'a' ? 'block' : 'hidden'} min-h-0 overflow-y-auto overscroll-contain bg-slate-50 px-5 py-6 min-[900px]:block min-[900px]:px-8`}>{p.right}</section>
+        <section ref={left} tabIndex={0} onScroll={(e) => remember(0, e.currentTarget.scrollTop)} aria-label="Question" className={`${tab === 'q' ? 'block' : 'hidden'} min-h-0 overflow-y-auto overscroll-contain px-4 py-4 min-[900px]:block min-[900px]:px-6`}>{p.left}</section>
+        <section ref={right} tabIndex={0} onScroll={(e) => remember(1, e.currentTarget.scrollTop)} aria-label="Answers" className={`${tab === 'a' ? 'block' : 'hidden'} min-h-0 overflow-y-auto overscroll-contain bg-slate-50 px-4 py-4 min-[900px]:block min-[900px]:px-6`}>{p.right}</section>
       </div>
 
       <footer className="flex items-center justify-between gap-3 border-t-2 border-slate-200 bg-white px-3 py-2.5 sm:px-5">

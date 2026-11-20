@@ -1,5 +1,5 @@
 import type { Difficulty, SectionId } from '../types';
-import { UNMAPPED } from '../lib/questionIndex';
+import { UNMAPPED } from '../types.ts';
 
 // verified: true  = name confirmed against College Board pages.
 // verified: false = written from memory. Check against the official Digital SAT test specification before relying on it.
